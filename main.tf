@@ -7,6 +7,7 @@ variable "project_region" {
   default = "us-central1"
 }
 
+
 // Configure the Google Cloud provider
 provider "google" {
 // credentials = file("CREDENTIALS_FILE.json")
@@ -38,11 +39,11 @@ module "network" {
   secondary_ranges = {
     subnet-01 = [
       {
-        range_name    = "subnet-01-secondary-01"
+        range_name    = "${var.environment_name}-subnet-01-secondary-01"
         ip_cidr_range = "10.1.0.0/16"
       },
       {
-        range_name    = "subnet-02-secondary-01"
+        range_name    = "${var.environment_name}-subnet-02-secondary-01"
         ip_cidr_range = "10.2.0.0/16"
       },
     ]
@@ -54,11 +55,11 @@ module "gke" {
   project_id                 =  var.project_id
   regional                   = false
   zones                      = ["${var.project_region}-a"]
-  name                       = "gke-test-1"
+  name                       = "${var.environment_name}-cluster"
   network                    = module.network.network_name
   subnetwork                 =  module.network.subnets_names[0]
-  ip_range_pods              = "subnet-01-secondary-01"
-  ip_range_services          = "subnet-02-secondary-01"
+  ip_range_pods              = "${var.environment_name}-subnet-01-secondary-01"
+  ip_range_services          = "${var.environment_name}-subnet-02-secondary-01"
   http_load_balancing        = false
   horizontal_pod_autoscaling = false
   network_policy             = false
