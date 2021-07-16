@@ -1,6 +1,6 @@
 
 variable "project_id" {
-  default = "multi-region-prj2-319322"
+  default = "multi-region-master"
 }
 
 variable "project_region" {
@@ -10,16 +10,26 @@ variable "project_region" {
 
 // Configure the Google Cloud provider
 provider "google" {
-// credentials = file("CREDENTIALS_FILE.json")
  project     = var.project_id
  region      = var.project_region
 }
 
 provider "google-beta" {
-//  credentials = file("CREDENTIALS_FILE.json")
   project     = var.project_id
   region      = var.project_region
 }
+
+resource "google_service_account" "cicd_account" {
+  account_id   = "cicd-service-account-id"
+  display_name = "Service Account for CI CD"
+}
+
+resource "google_project_iam_member" "cicd_account_editor_member" {
+  project = var.project_id
+  role    = "roles/editor"
+  member  = "serviceAccount:${google_service_account.cicd_account.email}"
+}
+
 
 module "network" {
   source  = "terraform-google-modules/network/google"
