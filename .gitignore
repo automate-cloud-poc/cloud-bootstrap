@@ -5,3 +5,4 @@
 .terraform
 *.info
 istio-1.9.2
+.state

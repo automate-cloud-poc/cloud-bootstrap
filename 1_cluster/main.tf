@@ -1,36 +1,12 @@
-variable "project_region" {
-  default = "us-central1"
-}
-
-
-// Configure the Google Cloud provider
-provider "google" {
- project     = var.project_id
- region      = var.project_region
-}
-
-provider "google-beta" {
-  project     = var.project_id
-  region      = var.project_region
-}
-
-// service account
-resource "google_service_account" "cicd_account" {
+data "google_service_account" "cicd_account" {
+  project      = var.project_id
   account_id   = "cicd-service-account-id"
-  display_name = "Service Account for CI CD"
 }
-
-resource "google_project_iam_member" "cicd_account_editor_member" {
-  project = var.project_id
-  role    = "roles/editor"
-  member  = "serviceAccount:${google_service_account.cicd_account.email}"
-}
-
-// cluster
 
 data "google_client_config" "provider" {}
 
 resource "google_container_cluster" "primary" {
+  project  = var.project_id
   name     = "my-gke-cluster"
   location = "${var.project_region}-a"
 
@@ -51,6 +27,7 @@ provider "kubernetes" {
 
 # Small Linux node pool to run some Linux-only Kubernetes Pods.
 resource "google_container_node_pool" "primary_nodes" {
+  project    = var.project_id
   name       = "my-node-pool"
   location   = "${var.project_region}-a"
   cluster    = google_container_cluster.primary.name
@@ -60,7 +37,7 @@ resource "google_container_node_pool" "primary_nodes" {
     machine_type = "e2-medium"
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.cicd_account.email
+    service_account = data.google_service_account.cicd_account.email
     oauth_scopes    = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
