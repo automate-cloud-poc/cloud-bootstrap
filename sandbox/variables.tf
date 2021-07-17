@@ -1,3 +1,3 @@
-variable "environment_name" {
-  default = "sandbox"
+variable "project_id" {
+  default = "multi-tenant-project"
 }

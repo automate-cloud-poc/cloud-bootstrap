@@ -4,3 +4,4 @@
 *.hcl
 .terraform
 *.info
+istio-1.9.2
