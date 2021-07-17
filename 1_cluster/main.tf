@@ -48,6 +48,10 @@ resource "google_container_node_pool" "primary_nodes" {
 resource "kubernetes_namespace" "namespace_api" {
   metadata {
     name = "api"
+
+    labels = {
+      istio-injection = "enabled"
+    }
   }
   depends_on = [google_container_node_pool.primary_nodes]
 }
