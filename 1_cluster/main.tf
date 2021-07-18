@@ -123,6 +123,21 @@ resource "helm_release" "istio_istiod" {
     value = "80"
   }
 
+  set {
+    name = "global.proxy.resources.requests.cpu"
+    value = "50m"
+  }
+
+  set {
+    name = "global.proxy_init.resources.requests.cpu"
+    value = "50m"
+  }
+
+  set {
+    name = "global.proxy_init.resources.requests.memory"
+    value = "512Mi"
+  }
+
   depends_on = [helm_release.istio_base]
 }
 
