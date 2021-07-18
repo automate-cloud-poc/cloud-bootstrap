@@ -22,3 +22,11 @@ resource "google_project_iam_member" "cicd_account_editor_member" {
   role    = "roles/editor"
   member  = "serviceAccount:${google_service_account.cicd_account.email}"
 }
+
+resource "google_project_iam_member" "cicd_account_container_adm_member" {
+  project = var.project_id
+  role    = "roles/container.admin"
+  member  = "serviceAccount:${google_service_account.cicd_account.email}"
+}
+
+//

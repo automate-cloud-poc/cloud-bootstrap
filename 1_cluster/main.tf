@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    kubectl = {
+      source = "Altinity/kubectl"
+      version = "1.7.3"
+    }
+  }
+}
+
 data "google_service_account" "cicd_account" {
   project      = var.project_id
   account_id   = "cicd-service-account-id"
@@ -31,7 +40,7 @@ resource "google_container_node_pool" "primary_nodes" {
   name       = "my-node-pool"
   location   = "${var.project_region}-a"
   cluster    = google_container_cluster.primary.name
-  node_count = 1
+  node_count = 2
 
   node_config {
     machine_type = "e2-medium"
@@ -165,3 +174,35 @@ resource "helm_release" "istio_egress" {
   depends_on = [helm_release.istio_ingress]
 }
 
+// kiali
+
+resource "kubernetes_namespace" "kiali-namespace" {
+  metadata {
+    name = "kiali-operator"
+  }
+  depends_on = [google_container_node_pool.primary_nodes]
+}
+
+resource "helm_release" "kiali" {
+  name       = "kiali-operator"
+
+  repository = "https://kiali.org/helm-charts"
+  chart      = "kiali-operator"
+
+  set {
+    name  = "cr.create"
+    value = "true"
+  }
+
+  set {
+    name  = "cr.namespace"
+    value = "istio-system"
+  }
+
+  set {
+    name = "auth.strategy"
+    value = "anonymous"
+  }
+
+  depends_on = [google_container_node_pool.primary_nodes, kubernetes_namespace.kiali-namespace]
+}
