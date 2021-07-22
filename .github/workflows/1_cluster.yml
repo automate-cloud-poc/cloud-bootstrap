@@ -47,6 +47,9 @@ name: '1-Cluster'
 on:
   workflow_dispatch:
 
+env:
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}
+
 jobs:
   terraform:
     name: 'Terraform'
