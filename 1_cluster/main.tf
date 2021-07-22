@@ -4,6 +4,18 @@ terraform {
       source = "Altinity/kubectl"
       version = "1.7.3"
     }
+    http = {
+      source = "hashicorp/http"
+      version = "2.1.0"
+    }
+    k8s = {
+      source = "ophelan/k8s"
+      version = "0.6.1"
+    }
+    local = {
+      source = "hashicorp/local"
+      version = "2.1.0"
+    }
   }
 }
 
@@ -174,35 +186,46 @@ resource "helm_release" "istio_egress" {
   depends_on = [helm_release.istio_ingress]
 }
 
+// monitor
+
+data "kubectl_path_documents" "addons_path" {
+  pattern = "istio-1.9.2/samples/addons/*.yaml"
+}
+
+resource "kubectl_manifest" "addons_manifests" {
+  count     = length(data.kubectl_path_documents.addons_path.documents)
+  yaml_body = element(data.kubectl_path_documents.addons_path.documents, count.index)
+}
+
 // kiali
 
-resource "kubernetes_namespace" "kiali-namespace" {
-  metadata {
-    name = "kiali-operator"
-  }
-  depends_on = [google_container_node_pool.primary_nodes]
-}
-
-resource "helm_release" "kiali" {
-  name       = "kiali-operator"
-
-  repository = "https://kiali.org/helm-charts"
-  chart      = "kiali-operator"
-
-  set {
-    name  = "cr.create"
-    value = "true"
-  }
-
-  set {
-    name  = "cr.namespace"
-    value = "istio-system"
-  }
-
-  set {
-    name = "auth.strategy"
-    value = "anonymous"
-  }
-
-  depends_on = [google_container_node_pool.primary_nodes, kubernetes_namespace.kiali-namespace]
-}
+//resource "kubernetes_namespace" "kiali-namespace" {
+//  metadata {
+//    name = "kiali-operator"
+//  }
+//  depends_on = [google_container_node_pool.primary_nodes]
+//}
+//
+//resource "helm_release" "kiali" {
+//  name       = "kiali-operator"
+//
+//  repository = "https://kiali.org/helm-charts"
+//  chart      = "kiali-operator"
+//
+//  set {
+//    name  = "cr.create"
+//    value = "true"
+//  }
+//
+//  set {
+//    name  = "cr.namespace"
+//    value = "istio-system"
+//  }
+//
+//  set {
+//    name = "auth.strategy"
+//    value = "anonymous"
+//  }
+//
+//  depends_on = [google_container_node_pool.primary_nodes, kubernetes_namespace.kiali-namespace]
+//}
