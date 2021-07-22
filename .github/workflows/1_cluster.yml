@@ -70,6 +70,11 @@ jobs:
         project_id: ${{ secrets.GKE_PROJECT }}
         export_default_credentials: true
 
+      # Set up helm
+    - name: Download Istio
+      run: |-
+        curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
+
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
