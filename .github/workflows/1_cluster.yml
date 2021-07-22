@@ -72,6 +72,7 @@ jobs:
 
       # Set up helm
     - name: Download Istio
+      working-directory: ./1_cluster
       run: |-
         curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
 
