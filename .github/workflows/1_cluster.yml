@@ -47,9 +47,6 @@ name: '1-Cluster'
 on:
   workflow_dispatch:
 
-env:
-  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GKE_SA_KEY }}
-
 jobs:
   terraform:
     name: 'Terraform'
@@ -65,6 +62,13 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2
+
+      # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+        export_default_credentials: true
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
