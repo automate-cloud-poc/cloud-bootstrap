@@ -29,4 +29,8 @@ resource "google_project_iam_member" "cicd_account_container_adm_member" {
   member  = "serviceAccount:${google_service_account.cicd_account.email}"
 }
 
-//
+resource "google_project_iam_member" "cicd_account_token_creator" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:${google_service_account.cicd_account.email}"
+}

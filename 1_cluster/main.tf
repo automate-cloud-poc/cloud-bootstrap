@@ -29,6 +29,13 @@ data "google_service_account" "cicd_account" {
   account_id   = "cicd-service-account-id"
 }
 
+data "google_service_account_access_token" "gcloud_access_token" {
+  provider               = google
+  target_service_account = data.google_service_account.cicd_account.email
+  scopes                 = ["userinfo-email", "cloud-platform"]
+  lifetime               = "600s"
+}
+
 data "google_client_config" "provider" {}
 
 resource "google_container_cluster" "primary" {
@@ -45,10 +52,9 @@ resource "google_container_cluster" "primary" {
 
 provider "kubernetes" {
   host  = "https://${google_container_cluster.primary.endpoint}"
-  token = data.google_client_config.provider.access_token
-  cluster_ca_certificate = base64decode(
-  google_container_cluster.primary.master_auth[0].cluster_ca_certificate,
-  )
+//  token = data.google_client_config.provider.access_token
+  token = data.google_service_account_access_token.gcloud_access_token.access_token
+  cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
 }
 
 # Small Linux node pool to run some Linux-only Kubernetes Pods.
@@ -85,7 +91,7 @@ resource "kubernetes_namespace" "namespace_api" {
 provider "helm" {
   kubernetes {
     host  = "https://${google_container_cluster.primary.endpoint}"
-    token = data.google_client_config.provider.access_token
+    token = data.google_service_account_access_token.gcloud_access_token.access_token
     cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
   }
 }
