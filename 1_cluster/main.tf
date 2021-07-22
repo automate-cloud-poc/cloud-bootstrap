@@ -19,6 +19,11 @@ terraform {
   }
 }
 
+provider "google" {
+  project     = var.project_id
+  region      = var.project_region
+}
+
 data "google_service_account" "cicd_account" {
   project      = var.project_id
   account_id   = "cicd-service-account-id"
