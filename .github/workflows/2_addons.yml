@@ -41,7 +41,7 @@ jobs:
     - name: is env here
       working-directory: ./1_cluster
       run: |-
-        cat $HOME/.kube/config | base64
+        cat $KUBECONFIG | base64
 
     - uses: actions-hub/kubectl@master
       env:
