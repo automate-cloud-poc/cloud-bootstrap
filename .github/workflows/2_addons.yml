@@ -37,11 +37,11 @@ jobs:
         location: us-central1-a
         credentials: ${{ secrets.GKE_SA_KEY }}
 
-      # Set up helm
-    - name: save env to config file
-      run: |-
-        mkdir $HOME/.kube && echo $KUBECONFIG > $HOME/.kube/config
 
     - uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBECONFIG}}
+        KUBECONFIG: ${{ secrets.KUBECONFIG}}
+        KUBE_CONTEXT: ${{github.event.inputs.cluster}}
       with:
         args: get pods
