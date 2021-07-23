@@ -36,12 +36,15 @@ jobs:
         cluster_name: ${{github.event.inputs.cluster}}
         location: us-central1-a
         credentials: ${{ secrets.GKE_SA_KEY }}
+    # The KUBECONFIG env var is automatically exported and picked up by kubectl.
+    - id: get-pods
+      run: kubectl get pods
 
 
-    - uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBECONFIG}}
-        KUBECONFIG: ${{ secrets.KUBECONFIG}}
-        KUBE_CONTEXT: ${{github.event.inputs.cluster}}
-      with:
-        args: get pods
+#    - uses: actions-hub/kubectl@master
+#      env:
+#        KUBE_CONFIG: ${{ secrets.KUBECONFIG}}
+#        KUBECONFIG: ${{ secrets.KUBECONFIG}}
+#        KUBE_CONTEXT: ${{github.event.inputs.cluster}}
+#      with:
+#        args: get pods
