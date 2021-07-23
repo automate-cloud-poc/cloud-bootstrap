@@ -45,6 +45,7 @@ jobs:
 
     - uses: actions-hub/kubectl@master
       env:
-        KUBE_CONFIG: ${{ secrets.KUBECONFIG}} | base64
+        KUBE_CONFIG: ${{ secrets.KUBECONFIG}}
+        KUBECONFIG: ${{ secrets.KUBECONFIG}}
       with:
         args: get pods
