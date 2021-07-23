@@ -39,9 +39,8 @@ jobs:
 
       # Set up helm
     - name: save env to config file
-      working-directory: ./1_cluster
       run: |-
-        echo $KUBECONFIG > $HOME/.kube/config
+        mkdir $HOME/.kube && echo $KUBECONFIG > $HOME/.kube/config
 
     - uses: actions-hub/kubectl@master
       with:
