@@ -24,13 +24,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-      # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
-        project_id: ${{ secrets.GKE_PROJECT }}
-        export_default_credentials: true
-
       # Set up helm
     - name: Download Istio
       working-directory: ./1_cluster
@@ -43,6 +36,12 @@ jobs:
         cluster_name: ${{github.event.inputs.cluster}}
         location: us-central1-a
         credentials: ${{ secrets.GKE_SA_KEY }}
+
+      # Set up helm
+    - name: is env here
+      working-directory: ./1_cluster
+      run: |-
+        cat $HOME/.kube/config | base64
 
     - uses: actions-hub/kubectl@master
       env:
