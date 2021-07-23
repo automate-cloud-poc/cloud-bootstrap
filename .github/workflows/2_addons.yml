@@ -41,7 +41,5 @@ jobs:
       run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/prometheus.yaml
     - id: apply-grafana
       run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/grafana.yaml
-    - id: apply-kiali
-      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/kiali.yaml
     - id: apply-jaeger
       run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/jaeger.yaml
