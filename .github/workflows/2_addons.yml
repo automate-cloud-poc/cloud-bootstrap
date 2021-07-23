@@ -38,14 +38,11 @@ jobs:
         credentials: ${{ secrets.GKE_SA_KEY }}
 
       # Set up helm
-    - name: is env here
+    - name: save env to config file
       working-directory: ./1_cluster
       run: |-
-        cat $KUBECONFIG
+        echo $KUBECONFIG > $HOME/.kube/config
 
     - uses: actions-hub/kubectl@master
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBECONFIG}}
-        KUBECONFIG: ${{ secrets.KUBECONFIG}}
       with:
         args: get pods
