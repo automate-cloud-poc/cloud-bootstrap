@@ -37,14 +37,11 @@ jobs:
         location: us-central1-a
         credentials: ${{ secrets.GKE_SA_KEY }}
     # The KUBECONFIG env var is automatically exported and picked up by kubectl.
-    - id: get-pods
-      run: kubectl get pods
-
-
-#    - uses: actions-hub/kubectl@master
-#      env:
-#        KUBE_CONFIG: ${{ secrets.KUBECONFIG}}
-#        KUBECONFIG: ${{ secrets.KUBECONFIG}}
-#        KUBE_CONTEXT: ${{github.event.inputs.cluster}}
-#      with:
-#        args: get pods
+    - id: apply prometheus
+      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/prometheus.yaml
+    - id: apply grafana
+      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/grafana.yaml
+    - id: apply kiali
+      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/kiali.yaml
+    - id: apply jaeger
+      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/jaeger.yaml
