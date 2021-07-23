@@ -46,6 +46,11 @@ name: '1-Cluster'
 
 on:
   workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Current cluster to deploy'
+        required: true
+        default: 'my-gke-cluster'
 
 jobs:
   terraform:
@@ -90,11 +95,30 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./1_cluster
-      run: terraform plan
+      run: terraform plan -var="cluster_name=${{github.event.inputs.cluster}}"
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       working-directory: ./1_cluster
       if: github.ref == 'refs/heads/master'
-      run: terraform apply -auto-approve
+      run: terraform apply -auto-approve -var="cluster_name=${{github.event.inputs.cluster}}"
+
+      # Set up helm
+    - name: Apply Add-Ons
+      working-directory: ./1_cluster
+      run: |-
+        curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
+
+      # Get the GKE credentials so we can deploy to the cluster
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        cluster_name: ${{github.event.inputs.cluster}}
+        location: us-central1-a
+        credentials: ${{ secrets.GKE_SA_KEY }}
+
+    - uses: actions-hub/kubectl@master
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
+      with:
+        args: get pods

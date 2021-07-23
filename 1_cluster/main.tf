@@ -40,7 +40,7 @@ data "google_client_config" "provider" {}
 
 resource "google_container_cluster" "primary" {
   project  = var.project_id
-  name     = "my-gke-cluster"
+  name     = var.cluster_name
   location = "${var.project_region}-a"
 
   # We can't create a cluster with no node pool defined, but we want to only use
