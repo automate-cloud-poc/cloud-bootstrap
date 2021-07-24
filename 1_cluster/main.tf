@@ -110,11 +110,6 @@ resource "helm_release" "nginx_ingress" {
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "nginx-ingress-controller"
 
-//  set {
-//    name  = "service.type"
-//    value = "ClusterIP"
-//  }
-
   depends_on = [google_container_node_pool.primary_nodes, kubernetes_namespace.ingress-basic-namespace]
 }
 
@@ -130,7 +125,7 @@ resource "helm_release" "istio_base" {
   name  = "istio-base"
   chart = "istio-1.9.2/manifests/charts/base"
 
-  timeout = 120
+  timeout         = 120
   cleanup_on_fail = true
   force_update    = true
   namespace       = "istio-system"
