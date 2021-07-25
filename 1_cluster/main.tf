@@ -96,23 +96,6 @@ provider "helm" {
   }
 }
 
-resource "kubernetes_namespace" "ingress-basic-namespace" {
-  metadata {
-    name = "ingress-basic"
-  }
-  depends_on = [google_container_node_pool.primary_nodes]
-}
-
-resource "helm_release" "nginx_ingress" {
-  name       = "nginx-ingress-controller"
-  namespace  = "ingress-basic"
-
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "nginx-ingress-controller"
-
-  depends_on = [google_container_node_pool.primary_nodes, kubernetes_namespace.ingress-basic-namespace]
-}
-
 resource "kubernetes_namespace" "istio-system-namespace" {
   metadata {
     name = "istio-system"
