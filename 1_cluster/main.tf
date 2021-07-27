@@ -183,3 +183,23 @@ resource "helm_release" "istio_egress" {
   depends_on = [helm_release.istio_ingress]
 }
 
+resource "kubectl_manifest" "kubectl_external_gateway" {
+  depends_on = [helm_release.istio_ingress]
+  yaml_body = <<YAML
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: main-gateway
+  namespace: istio-system
+spec:
+  selector:
+    app: istio-ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - '*'
+YAML
+}
