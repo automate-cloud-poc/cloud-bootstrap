@@ -171,6 +171,33 @@ resource "helm_release" "istio_ingress" {
   depends_on = [helm_release.istio_istiod]
 }
 
+resource "helm_release" "istio_ingress_internal" {
+  name  = "istio-ingress-internal"
+  chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
+
+  timeout = 120
+  cleanup_on_fail = true
+  force_update    = true
+  namespace       = "istio-system"
+
+  set {
+    name = "gateways.istio-ingressgateway.name"
+    value = "internal-ingressgateway"
+  }
+
+  set {
+    name = "gateways.istio-ingressgateway.labels.app"
+    value = "internal-gateway"
+  }
+
+  set {
+    name = "gateways.istio-ingressgateway.type"
+    value = "ClusterIP"
+  }
+
+  depends_on = [helm_release.istio_istiod]
+}
+
 resource "helm_release" "istio_egress" {
   name  = "istio-egress"
   chart = "istio-1.9.2/manifests/charts/gateways/istio-egress"
