@@ -159,45 +159,52 @@ resource "helm_release" "istio_istiod" {
   depends_on = [helm_release.istio_base]
 }
 
-resource "helm_release" "istio_ingress_external" {
-  name  = "istio-ingress"
+resource "kubernetes_namespace" "gateway-namespace" {
+  metadata {
+    name = "gateway"
+  }
+  depends_on = [google_container_node_pool.primary_nodes]
+}
+
+resource "helm_release" "istio_ingress_edge" {
+  name  = "edge-ingress"
   chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
 
   timeout = 120
   cleanup_on_fail = true
   force_update    = true
-  namespace       = "istio-system"
+  namespace       = "gateway"
 
   set {
     name = "gateways.istio-ingressgateway.name"
-    value = "external-ingressgateway"
+    value = "edge-ingress"
   }
 
   set {
     name = "gateways.istio-ingressgateway.labels.app"
-    value = "external-gateway"
+    value = "edge-ingress"
   }
 
-  depends_on = [helm_release.istio_istiod]
+  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
 }
 
 resource "helm_release" "istio_ingress_internal" {
-  name  = "istio-ingress-internal"
+  name  = "internal-ingress"
   chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
 
   timeout = 120
   cleanup_on_fail = true
   force_update    = true
-  namespace       = "istio-system"
+  namespace       = "gateway"
 
   set {
     name = "gateways.istio-ingressgateway.name"
-    value = "internal-ingressgateway"
+    value = "internal-ingress"
   }
 
   set {
     name = "gateways.istio-ingressgateway.labels.app"
-    value = "internal-gateway"
+    value = "internal-ingress"
   }
 
   set {
@@ -205,17 +212,17 @@ resource "helm_release" "istio_ingress_internal" {
     value = "ClusterIP"
   }
 
-  depends_on = [helm_release.istio_istiod]
+  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
 }
 
 resource "helm_release" "istio_egress" {
-  name  = "istio-egress"
+  name  = "edge-egress"
   chart = "istio-1.9.2/manifests/charts/gateways/istio-egress"
 
   timeout = 120
   cleanup_on_fail = true
   force_update    = true
-  namespace       = "istio-system"
+  namespace       = "gateway"
 
-  depends_on = [helm_release.istio_ingress]
+  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
 }
