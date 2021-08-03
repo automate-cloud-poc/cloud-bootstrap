@@ -7,6 +7,11 @@ on:
         description: 'Current cluster to deploy'
         required: true
         default: 'my-gke-cluster'
+  workflow_run:
+    workflows: ["1-Cluster"]
+    branches: [master]
+    types:
+      - completed
 
 jobs:
   terraform:
