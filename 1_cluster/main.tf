@@ -159,7 +159,7 @@ resource "helm_release" "istio_istiod" {
   depends_on = [helm_release.istio_base]
 }
 
-resource "helm_release" "istio_ingress" {
+resource "helm_release" "istio_ingress_external" {
   name  = "istio-ingress"
   chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
 
@@ -167,6 +167,16 @@ resource "helm_release" "istio_ingress" {
   cleanup_on_fail = true
   force_update    = true
   namespace       = "istio-system"
+
+  set {
+    name = "gateways.istio-ingressgateway.name"
+    value = "external-ingressgateway"
+  }
+
+  set {
+    name = "gateways.istio-ingressgateway.labels.app"
+    value = "external-gateway"
+  }
 
   depends_on = [helm_release.istio_istiod]
 }
