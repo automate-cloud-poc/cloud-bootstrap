@@ -226,3 +226,10 @@ resource "helm_release" "istio_egress" {
 
   depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
 }
+
+resource "kubernetes_namespace" "argocd-namespace" {
+  metadata {
+    name = "argocd"
+  }
+  depends_on = [google_container_node_pool.primary_nodes]
+}
