@@ -111,13 +111,5 @@ jobs:
         location: us-central1-a
         credentials: ${{ secrets.GKE_SA_KEY }}
       # The KUBECONFIG env var is automatically exported and picked up by kubectl.
-    - id: apply-gateway
-      run: kubectl apply -f 3_gateway/gateway.yml
-    - id: apply-prometheus
-      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/prometheus.yaml
-    - id: apply-grafana
-      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/grafana.yaml
-    - id: apply-jaeger
-      run: kubectl apply -f 1_cluster/istio-1.9.2/samples/addons/jaeger.yaml
     - id: apply-argocd
       run: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
