@@ -88,13 +88,27 @@ resource "kubernetes_namespace" "namespace_api" {
   depends_on = [google_container_node_pool.primary_nodes]
 }
 
-//provider "helm" {
-//  kubernetes {
-//    host  = "https://${google_container_cluster.primary.endpoint}"
-//    token = data.google_service_account_access_token.gcloud_access_token.access_token
-//    cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
-//  }
-//}
+resource "kubernetes_namespace" "namespace_kiali" {
+  metadata {
+    name = "kiali-operator"
+  }
+  depends_on = [google_container_node_pool.primary_nodes]
+}
+
+resource "kubernetes_namespace" "namespace_argo" {
+  metadata {
+    name = "argo"
+  }
+  depends_on = [google_container_node_pool.primary_nodes]
+}
+
+provider "helm" {
+  kubernetes {
+    host  = "https://${google_container_cluster.primary.endpoint}"
+    token = data.google_service_account_access_token.gcloud_access_token.access_token
+    cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth[0].cluster_ca_certificate)
+  }
+}
 
 resource "kubernetes_namespace" "istio-system-namespace" {
   metadata {
