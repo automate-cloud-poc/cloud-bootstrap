@@ -117,129 +117,129 @@ resource "kubernetes_namespace" "istio-system-namespace" {
   depends_on = [google_container_node_pool.primary_nodes]
 }
 
-// curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
-resource "helm_release" "istio_base" {
-  name  = "istio-base"
-  chart = "istio-1.9.2/manifests/charts/base"
-
-  timeout         = 120
-  cleanup_on_fail = true
-  force_update    = true
-  namespace       = "istio-system"
-
-
-  depends_on = [kubernetes_namespace.istio-system-namespace]
-}
-
-resource "helm_release" "istio_istiod" {
-  name  = "istiod"
-  chart = "istio-1.9.2/manifests/charts/istio-control/istio-discovery"
-
-  timeout = 120
-  cleanup_on_fail = true
-  force_update    = true
-  namespace       = "istio-system"
-
-  set {
-    name = "pilot.resources.requests.cpu"
-    value = "50m"
-  }
-
-  set {
-    name = "pilot.resources.requests.memory"
-    value = "512Mi"
-  }
-
-  set {
-    name = "pilot.cpu.targetAverageUtilization"
-    value = "80"
-  }
-
-  set {
-    name = "global.proxy.resources.requests.cpu"
-    value = "50m"
-  }
-
-  set {
-    name = "global.proxy_init.resources.requests.cpu"
-    value = "50m"
-  }
-
-  set {
-    name = "global.proxy_init.resources.requests.memory"
-    value = "512Mi"
-  }
-
-  depends_on = [helm_release.istio_base]
-}
-
-resource "kubernetes_namespace" "gateway-namespace" {
-  metadata {
-    name = "gateway"
-  }
-  depends_on = [google_container_node_pool.primary_nodes]
-}
-
-resource "helm_release" "istio_ingress_edge" {
-  name  = "edge-ingress"
-  chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
-
-  timeout = 120
-  cleanup_on_fail = true
-  force_update    = true
-  namespace       = "gateway"
-
-  set {
-    name = "gateways.istio-ingressgateway.name"
-    value = "edge-ingress"
-  }
-
-  set {
-    name = "gateways.istio-ingressgateway.labels.app"
-    value = "edge-ingress"
-  }
-
-  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
-}
-
-resource "helm_release" "istio_ingress_internal" {
-  name  = "internal-ingress"
-  chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
-
-  timeout = 120
-  cleanup_on_fail = true
-  force_update    = true
-  namespace       = "gateway"
-
-  set {
-    name = "gateways.istio-ingressgateway.name"
-    value = "internal-ingress"
-  }
-
-  set {
-    name = "gateways.istio-ingressgateway.labels.app"
-    value = "internal-ingress"
-  }
-
-  set {
-    name = "gateways.istio-ingressgateway.type"
-    value = "ClusterIP"
-  }
-
-  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
-}
-
-resource "helm_release" "istio_egress" {
-  name  = "edge-egress"
-  chart = "istio-1.9.2/manifests/charts/gateways/istio-egress"
-
-  timeout = 120
-  cleanup_on_fail = true
-  force_update    = true
-  namespace       = "gateway"
-
-  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
-}
+//// curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
+//resource "helm_release" "istio_base" {
+//  name  = "istio-base"
+//  chart = "istio-1.9.2/manifests/charts/base"
+//
+//  timeout         = 120
+//  cleanup_on_fail = true
+//  force_update    = true
+//  namespace       = "istio-system"
+//
+//
+//  depends_on = [kubernetes_namespace.istio-system-namespace]
+//}
+//
+//resource "helm_release" "istio_istiod" {
+//  name  = "istiod"
+//  chart = "istio-1.9.2/manifests/charts/istio-control/istio-discovery"
+//
+//  timeout = 120
+//  cleanup_on_fail = true
+//  force_update    = true
+//  namespace       = "istio-system"
+//
+//  set {
+//    name = "pilot.resources.requests.cpu"
+//    value = "50m"
+//  }
+//
+//  set {
+//    name = "pilot.resources.requests.memory"
+//    value = "512Mi"
+//  }
+//
+//  set {
+//    name = "pilot.cpu.targetAverageUtilization"
+//    value = "80"
+//  }
+//
+//  set {
+//    name = "global.proxy.resources.requests.cpu"
+//    value = "50m"
+//  }
+//
+//  set {
+//    name = "global.proxy_init.resources.requests.cpu"
+//    value = "50m"
+//  }
+//
+//  set {
+//    name = "global.proxy_init.resources.requests.memory"
+//    value = "512Mi"
+//  }
+//
+//  depends_on = [helm_release.istio_base]
+//}
+//
+//resource "kubernetes_namespace" "gateway-namespace" {
+//  metadata {
+//    name = "gateway"
+//  }
+//  depends_on = [google_container_node_pool.primary_nodes]
+//}
+//
+//resource "helm_release" "istio_ingress_edge" {
+//  name  = "edge-ingress"
+//  chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
+//
+//  timeout = 120
+//  cleanup_on_fail = true
+//  force_update    = true
+//  namespace       = "gateway"
+//
+//  set {
+//    name = "gateways.istio-ingressgateway.name"
+//    value = "edge-ingress"
+//  }
+//
+//  set {
+//    name = "gateways.istio-ingressgateway.labels.app"
+//    value = "edge-ingress"
+//  }
+//
+//  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
+//}
+//
+//resource "helm_release" "istio_ingress_internal" {
+//  name  = "internal-ingress"
+//  chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
+//
+//  timeout = 120
+//  cleanup_on_fail = true
+//  force_update    = true
+//  namespace       = "gateway"
+//
+//  set {
+//    name = "gateways.istio-ingressgateway.name"
+//    value = "internal-ingress"
+//  }
+//
+//  set {
+//    name = "gateways.istio-ingressgateway.labels.app"
+//    value = "internal-ingress"
+//  }
+//
+//  set {
+//    name = "gateways.istio-ingressgateway.type"
+//    value = "ClusterIP"
+//  }
+//
+//  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
+//}
+//
+//resource "helm_release" "istio_egress" {
+//  name  = "edge-egress"
+//  chart = "istio-1.9.2/manifests/charts/gateways/istio-egress"
+//
+//  timeout = 120
+//  cleanup_on_fail = true
+//  force_update    = true
+//  namespace       = "gateway"
+//
+//  depends_on = [helm_release.istio_istiod, kubernetes_namespace.gateway-namespace]
+//}
 
 resource "kubernetes_namespace" "argocd-namespace" {
   metadata {
@@ -247,3 +247,17 @@ resource "kubernetes_namespace" "argocd-namespace" {
   }
   depends_on = [google_container_node_pool.primary_nodes]
 }
+//
+//// sealed secret
+//resource "helm_release" "sealed_secret_helm" {
+//  name  = "sealed-secret"
+//  repository = "https://bitnami-labs.github.io/sealed-secrets"
+//  chart = "sealed-secrets"
+//
+//  timeout         = 120
+//  cleanup_on_fail = true
+//  force_update    = true
+//
+//
+//  depends_on = [google_container_node_pool.primary_nodes]
+//}
