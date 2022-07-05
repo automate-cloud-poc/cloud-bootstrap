@@ -1,0 +1,45 @@
+name: '2-AddOns'
+
+on:
+  workflow_dispatch:
+    inputs:
+      cluster:
+        description: 'Current cluster to deploy'
+        required: true
+        default: 'my-gke-cluster'
+
+jobs:
+  terraform:
+    name: 'Addons'
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+      # Set up helm
+    - name: Download Istio
+      working-directory: ./2_addons
+      run: |-
+        curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
+
+   # Get the GKE credentials so we can deploy to the cluster
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        cluster_name: ${{github.event.inputs.cluster}}
+        location: us-central1-a
+        credentials: ${{ secrets.GKE_SA_KEY }}
+    # The KUBECONFIG env var is automatically exported and picked up by kubectl.
+    - id: apply-prometheus
+      run: kubectl apply -f 2_addons/istio-1.9.2/samples/addons/prometheus.yaml
+    - id: apply-grafana
+      run: kubectl apply -f 2_addons/istio-1.9.2/samples/addons/grafana.yaml
+    - id: apply-jaeger
+      run: kubectl apply -f 2_addons/istio-1.9.2/samples/addons/jaeger.yaml
