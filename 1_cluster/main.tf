@@ -26,7 +26,7 @@ provider "google" {
 
 data "google_service_account" "cicd_account" {
   project      = var.project_id
-  account_id   = "cicd-service-account-id"
+  account_id   = "cicd-service-account"
 }
 
 data "google_service_account_access_token" "gcloud_access_token" {
@@ -35,8 +35,6 @@ data "google_service_account_access_token" "gcloud_access_token" {
   scopes                 = ["userinfo-email", "cloud-platform"]
   lifetime               = "600s"
 }
-
-data "google_client_config" "provider" {}
 
 resource "google_container_cluster" "primary" {
   project  = var.project_id
@@ -117,10 +115,10 @@ resource "kubernetes_namespace" "istio-system-namespace" {
   depends_on = [google_container_node_pool.primary_nodes]
 }
 
-//// curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
+//// curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.17.2 sh -
 resource "helm_release" "istio_base" {
   name  = "istio-base"
-  chart = "istio-1.9.2/manifests/charts/base"
+  chart = "istio-1.17.2/manifests/charts/base"
 
   timeout         = 120
   cleanup_on_fail = true
@@ -133,7 +131,7 @@ resource "helm_release" "istio_base" {
 
 resource "helm_release" "istio_istiod" {
   name  = "istiod"
-  chart = "istio-1.9.2/manifests/charts/istio-control/istio-discovery"
+  chart = "istio-1.17.2/manifests/charts/istio-control/istio-discovery"
 
   timeout = 120
   cleanup_on_fail = true
@@ -182,7 +180,7 @@ resource "kubernetes_namespace" "gateway-namespace" {
 
 resource "helm_release" "istio_ingress_edge" {
   name  = "edge-ingress"
-  chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
+  chart = "istio-1.17.2/manifests/charts/gateways/istio-ingress"
 
   timeout = 120
   cleanup_on_fail = true
@@ -204,7 +202,7 @@ resource "helm_release" "istio_ingress_edge" {
 
 resource "helm_release" "istio_ingress_internal" {
   name  = "internal-ingress"
-  chart = "istio-1.9.2/manifests/charts/gateways/istio-ingress"
+  chart = "istio-1.17.2/manifests/charts/gateways/istio-ingress"
 
   timeout = 120
   cleanup_on_fail = true
@@ -231,7 +229,7 @@ resource "helm_release" "istio_ingress_internal" {
 
 resource "helm_release" "istio_egress" {
   name  = "edge-egress"
-  chart = "istio-1.9.2/manifests/charts/gateways/istio-egress"
+  chart = "istio-1.17.2/manifests/charts/gateways/istio-egress"
 
   timeout = 120
   cleanup_on_fail = true

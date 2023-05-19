@@ -1,5 +1,5 @@
 variable "project_id" {
-  default = "multi-tenant-project"
+  default = "automate-cloud-poc"
 }
 
 variable "project_region" {

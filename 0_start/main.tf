@@ -13,7 +13,7 @@ provider "google-beta" {
 
 // service account
 resource "google_service_account" "cicd_account" {
-  account_id   = "cicd-service-account-id"
+  account_id   = "cicd-service-account"
   display_name = "Service Account for CI CD"
 }
 

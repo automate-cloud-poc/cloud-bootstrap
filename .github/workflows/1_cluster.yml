@@ -79,7 +79,7 @@ jobs:
     - name: Download Istio
       working-directory: ./1_cluster
       run: |-
-        curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.9.2 sh -
+        curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.17.2 sh -
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
